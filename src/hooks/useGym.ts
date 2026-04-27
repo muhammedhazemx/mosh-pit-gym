@@ -55,6 +55,10 @@ export function useGym() {
     await db.sets.where('sessionId').equals(sessionId).delete();
   };
 
+  const deleteSet = async (setId: number) => {
+    await db.sets.delete(setId);
+  };
+
   return {
     routines,
     activeSession,
@@ -63,6 +67,7 @@ export function useGym() {
     endSession,
     updateRoutine,
     deleteSession,
+    deleteSet,
     logSet,
     getSetsForSession,
     getPrForExercise,

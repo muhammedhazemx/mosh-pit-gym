@@ -21,11 +21,19 @@ export const ScreenSession: React.FC<Props> = ({ session, onEndSession }) => {
   const [isResting, setIsResting] = useState(false);
   const [isAddingExercise, setIsAddingExercise] = useState(false);
   const [newExerciseName, setNewExerciseName] = useState('');
-  const restTime = 90;
+  const [restTime, setRestTime] = useState(90);
   const [timer, setTimer] = useState(0);
 
   const lastSet = getLastSetForExercise(currentExercise);
   const pr = getPrForExercise(currentExercise);
+
+  const adjustRestTime = (amount: number) => {
+    setRestTime(prev => Math.max(0, prev + amount));
+  };
+
+  const adjustTimer = (amount: number) => {
+    setTimer(prev => Math.max(0, prev + amount));
+  };
 
   const handleAddExercise = async () => {
     if (!newExerciseName || !routine) return;
@@ -71,14 +79,25 @@ export const ScreenSession: React.FC<Props> = ({ session, onEndSession }) => {
     // Check for PR to show celebration
     const currentWeight = parseFloat(weight);
     if (pr && currentWeight > pr.weight) {
-       // Visual flash for PR
+       // High-intensity visual flash for PR
        const flash = document.createElement('div');
        flash.className = 'pr-celebration';
+       flash.style.backgroundColor = 'white';
+       flash.style.mixBlendMode = 'difference';
        document.body.appendChild(flash);
-       setTimeout(() => flash.remove(), 300);
+       
+       // Repeat flash for "strobe" effect
+       setTimeout(() => {
+         flash.style.display = 'none';
+         setTimeout(() => {
+           flash.style.display = 'block';
+           setTimeout(() => flash.remove(), 100);
+         }, 50);
+       }, 100);
        
        if ('vibrate' in navigator) {
-         navigator.vibrate([10, 30, 10, 30, 100]); // "Energized" pattern
+         // Deep, layered "Double Pulse" vibration pattern
+         navigator.vibrate([200, 100, 200, 50, 400]); 
        }
     }
 
@@ -99,7 +118,11 @@ export const ScreenSession: React.FC<Props> = ({ session, onEndSession }) => {
         className="container"
         style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: 'var(--fg-color)', color: 'var(--bg-color)' }}
       >
-        <h1 style={{ fontSize: '10rem' }}>{Math.floor(timer / 60)}:{(timer % 60).toString().padStart(2, '0')}</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+          <button className="label-bracket" style={{ fontSize: '2rem', color: 'var(--bg-color)' }} onClick={() => adjustTimer(-15)}>-</button>
+          <h1 style={{ fontSize: '8rem' }}>{Math.floor(timer / 60)}:{(timer % 60).toString().padStart(2, '0')}</h1>
+          <button className="label-bracket" style={{ fontSize: '2rem', color: 'var(--bg-color)' }} onClick={() => adjustTimer(15)}>+</button>
+        </div>
         <h2 style={{ letterSpacing: '0.5em' }}>RESTING</h2>
         <button 
           className="brutalist-button" 
@@ -187,6 +210,12 @@ export const ScreenSession: React.FC<Props> = ({ session, onEndSession }) => {
             [log_set]
           </button>
         </div>
+      </div>
+
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', marginTop: '2rem' }}>
+        <button className="label-bracket" onClick={() => adjustRestTime(-15)}>-</button>
+        <span className="label-bracket" style={{ color: 'var(--fg-color)' }}>rest: {Math.floor(restTime / 60)}:{(restTime % 60).toString().padStart(2, '0')}</span>
+        <button className="label-bracket" onClick={() => adjustRestTime(15)}>+</button>
       </div>
 
       <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '1rem' }}>
