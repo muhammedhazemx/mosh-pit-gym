@@ -118,10 +118,22 @@ export const ScreenSession: React.FC<Props> = ({ session, onEndSession }) => {
         className="container"
         style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: 'var(--fg-color)', color: 'var(--bg-color)' }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
-          <button className="label-bracket" style={{ fontSize: '2rem', color: 'var(--bg-color)' }} onClick={() => adjustTimer(-15)}>-</button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '3rem' }}>
+          <button 
+            className="label-bracket" 
+            style={{ fontSize: '4rem', color: 'var(--bg-color)', padding: '1rem' }} 
+            onClick={() => adjustTimer(-15)}
+          >
+            -
+          </button>
           <h1 style={{ fontSize: '8rem' }}>{Math.floor(timer / 60)}:{(timer % 60).toString().padStart(2, '0')}</h1>
-          <button className="label-bracket" style={{ fontSize: '2rem', color: 'var(--bg-color)' }} onClick={() => adjustTimer(15)}>+</button>
+          <button 
+            className="label-bracket" 
+            style={{ fontSize: '4rem', color: 'var(--bg-color)', padding: '1rem' }} 
+            onClick={() => adjustTimer(15)}
+          >
+            +
+          </button>
         </div>
         <h2 style={{ letterSpacing: '0.5em' }}>RESTING</h2>
         <button 
