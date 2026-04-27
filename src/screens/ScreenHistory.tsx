@@ -99,7 +99,7 @@ const SessionItem: React.FC<{ session: any; onDelete: (id: number) => void }> = 
 };
 
 export const ScreenHistory: React.FC<Props> = ({ onBack }) => {
-  const { history, deleteSession } = useGym();
+  const { history, deleteSession, exportData } = useGym();
 
   const handleDelete = async (id: number) => {
     if (confirm('Permanently delete this session log?')) {
@@ -114,8 +114,9 @@ export const ScreenHistory: React.FC<Props> = ({ onBack }) => {
       exit={{ opacity: 0 }}
       className="container"
     >
-      <div style={{ marginBottom: '2rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem' }}>
         <button className="label-bracket" onClick={onBack}>[back]</button>
+        <button className="label-bracket" onClick={exportData}>[export_json]</button>
       </div>
 
       <h1 style={{ fontSize: '3.5rem', marginBottom: '2rem' }}>HISTORY</h1>

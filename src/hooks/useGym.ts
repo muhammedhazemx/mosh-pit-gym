@@ -71,6 +71,29 @@ export function useGym() {
     await db.sets.delete(setId);
   };
 
+  const exportData = async () => {
+    const sessions = await db.sessions.toArray();
+    const sets = await db.sets.toArray();
+    const routines = await db.routines.toArray();
+    
+    const data = {
+      exportDate: new Date(),
+      sessions,
+      sets,
+      routines
+    };
+
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `mosh-pit-gym-data-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return {
     routines,
     activeSession,
@@ -80,6 +103,7 @@ export function useGym() {
     updateRoutine,
     deleteSession,
     deleteSet,
+    exportData,
     logSet,
     getSetsForSession,
     getPrForExercise,
