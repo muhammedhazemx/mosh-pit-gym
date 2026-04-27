@@ -17,11 +17,24 @@ const SessionItem: React.FC<{ session: any; onDelete: (id: number) => void }> = 
     [session.id]
   );
 
+  const formatDuration = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}m ${secs}s`;
+  };
+
   const groupedSets = sets?.reduce((acc: Record<string, WorkoutSet[]>, set) => {
     if (!acc[set.exerciseName]) acc[set.exerciseName] = [];
     acc[set.exerciseName].push(set);
     return acc;
   }, {});
+
+  const getExerciseTally = (exSets: WorkoutSet[]) => {
+    if (exSets.length < 2) return '0m 0s';
+    const start = exSets[0].timestamp.getTime();
+    const end = exSets[exSets.length - 1].timestamp.getTime();
+    return formatDuration(Math.floor((end - start) / 1000));
+  };
 
   const handleDeleteSet = async (e: React.MouseEvent, setId: number) => {
     e.stopPropagation();
@@ -41,7 +54,10 @@ const SessionItem: React.FC<{ session: any; onDelete: (id: number) => void }> = 
           <span className="label-bracket">{session.date.toLocaleDateString()}</span>
         </div>
         <div style={{ marginTop: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span className="label-bracket">{expanded ? '[hide_details]' : 'energy_logged'}</span>
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <span className="label-bracket">{expanded ? '[hide_details]' : 'energy_logged'}</span>
+            <span className="label-bracket" style={{ color: 'var(--fg-color)' }}>{formatDuration(session.duration)}</span>
+          </div>
           <button className="label-bracket" onClick={(e) => { e.stopPropagation(); onDelete(session.id!); }} style={{ opacity: 0.5 }}>[delete_session]</button>
         </div>
       </div>
@@ -56,7 +72,10 @@ const SessionItem: React.FC<{ session: any; onDelete: (id: number) => void }> = 
           >
             {groupedSets && Object.entries(groupedSets).map(([name, exSets]) => (
               <div key={name} style={{ marginBottom: '1.5rem' }}>
-                <h3 className="label-bracket" style={{ color: 'var(--fg-color)', marginBottom: '0.5rem', fontSize: '1rem' }}>{name}</h3>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.5rem' }}>
+                  <h3 className="label-bracket" style={{ color: 'var(--fg-color)', fontSize: '1rem' }}>{name}</h3>
+                  <span className="label-bracket" style={{ opacity: 0.7 }}>tally: {getExerciseTally(exSets)}</span>
+                </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                   {exSets.map((set) => (
                     <div key={set.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '1rem' }}>

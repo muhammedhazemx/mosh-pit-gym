@@ -112,7 +112,7 @@ export const ScreenSession: React.FC<Props> = ({ session, onEndSession }) => {
   };
 
   const handleEndSession = async () => {
-    await endSession(session.id!, 0); // TODO: calc duration
+    await endSession(session.id!);
     onEndSession();
   };
 

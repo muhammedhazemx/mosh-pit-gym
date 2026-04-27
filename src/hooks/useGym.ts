@@ -7,8 +7,10 @@ export function useGym() {
   const history = useLiveQuery(() => db.sessions.where('status').equals('completed').reverse().sortBy('date'));
 
   const startSession = async (routine: Routine) => {
+    const now = new Date();
     const id = await db.sessions.add({
-      date: new Date(),
+      date: now,
+      startTime: now,
       routineId: routine.id,
       routineName: routine.name,
       duration: 0,
@@ -17,8 +19,18 @@ export function useGym() {
     return id;
   };
 
-  const endSession = async (sessionId: number, duration: number) => {
-    await db.sessions.update(sessionId, { status: 'completed', duration });
+  const endSession = async (sessionId: number) => {
+    const session = await db.sessions.get(sessionId);
+    if (!session) return;
+    
+    const endTime = new Date();
+    const duration = Math.floor((endTime.getTime() - session.startTime.getTime()) / 1000);
+    
+    await db.sessions.update(sessionId, { 
+      status: 'completed', 
+      endTime,
+      duration 
+    });
   };
 
   const logSet = async (set: Omit<WorkoutSet, 'id' | 'timestamp'>) => {

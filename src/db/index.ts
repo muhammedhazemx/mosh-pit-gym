@@ -16,6 +16,8 @@ export interface Exercise {
 export interface Session {
   id?: number;
   date: Date;
+  startTime: Date;
+  endTime?: Date;
   routineId?: number;
   routineName: string;
   duration: number; // in seconds
