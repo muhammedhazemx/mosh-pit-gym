@@ -19,6 +19,7 @@ export const ScreenSession: React.FC<Props> = ({ session, onEndSession }) => {
   const [weight, setWeight] = useState('');
   const [reps, setReps] = useState('');
   const [isResting, setIsResting] = useState(false);
+  const [isTimerPaused, setIsTimerPaused] = useState(false);
   const [isAddingExercise, setIsAddingExercise] = useState(false);
   const [newExerciseName, setNewExerciseName] = useState('');
   const [restTime, setRestTime] = useState(90);
@@ -33,6 +34,10 @@ export const ScreenSession: React.FC<Props> = ({ session, onEndSession }) => {
 
   const adjustTimer = (amount: number) => {
     setTimer(prev => Math.max(0, prev + amount));
+  };
+
+  const togglePause = () => {
+    setIsTimerPaused(!isTimerPaused);
   };
 
   const handleAddExercise = async () => {
@@ -53,13 +58,14 @@ export const ScreenSession: React.FC<Props> = ({ session, onEndSession }) => {
 
   useEffect(() => {
     let interval: number;
-    if (isResting && timer > 0) {
+    if (isResting && !isTimerPaused && timer > 0) {
       interval = setInterval(() => setTimer(t => t - 1), 1000);
     } else if (timer === 0) {
       setIsResting(false);
+      setIsTimerPaused(false);
     }
     return () => clearInterval(interval);
-  }, [isResting, timer]);
+  }, [isResting, isTimerPaused, timer]);
 
   const handleLogSet = async () => {
     if (!weight || !reps) return;
@@ -122,7 +128,7 @@ export const ScreenSession: React.FC<Props> = ({ session, onEndSession }) => {
           <button 
             className="label-bracket" 
             style={{ fontSize: '4rem', color: 'var(--bg-color)', padding: '1rem' }} 
-            onClick={() => adjustTimer(-15)}
+            onClick={() => adjustTimer(-10)}
           >
             -
           </button>
@@ -130,19 +136,29 @@ export const ScreenSession: React.FC<Props> = ({ session, onEndSession }) => {
           <button 
             className="label-bracket" 
             style={{ fontSize: '4rem', color: 'var(--bg-color)', padding: '1rem' }} 
-            onClick={() => adjustTimer(15)}
+            onClick={() => adjustTimer(10)}
           >
             +
           </button>
         </div>
-        <h2 style={{ letterSpacing: '0.5em' }}>RESTING</h2>
-        <button 
-          className="brutalist-button" 
-          style={{ marginTop: '4rem', borderColor: 'var(--bg-color)' }}
-          onClick={() => setIsResting(false)}
-        >
-          [skip]
-        </button>
+        <h2 style={{ letterSpacing: '0.5em', marginBottom: '2rem' }}>RESTING</h2>
+        
+        <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+          <button 
+            className="label-bracket" 
+            style={{ fontSize: '1.2rem', color: 'var(--bg-color)', border: '1px solid var(--bg-color)', padding: '0.5rem 1rem' }}
+            onClick={togglePause}
+          >
+            {isTimerPaused ? '[resume]' : '[pause]'}
+          </button>
+          <button 
+            className="brutalist-button" 
+            style={{ borderColor: 'var(--bg-color)' }}
+            onClick={() => setIsResting(false)}
+          >
+            [skip]
+          </button>
+        </div>
       </motion.div>
     );
   }
@@ -225,9 +241,9 @@ export const ScreenSession: React.FC<Props> = ({ session, onEndSession }) => {
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', marginTop: '2rem' }}>
-        <button className="label-bracket" onClick={() => adjustRestTime(-15)}>-</button>
+        <button className="label-bracket" onClick={() => adjustRestTime(-10)}>-</button>
         <span className="label-bracket" style={{ color: 'var(--fg-color)' }}>rest: {Math.floor(restTime / 60)}:{(restTime % 60).toString().padStart(2, '0')}</span>
-        <button className="label-bracket" onClick={() => adjustRestTime(15)}>+</button>
+        <button className="label-bracket" onClick={() => adjustRestTime(10)}>+</button>
       </div>
 
       <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '1rem' }}>
