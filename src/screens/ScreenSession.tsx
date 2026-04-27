@@ -124,26 +124,35 @@ export const ScreenSession: React.FC<Props> = ({ session, onEndSession }) => {
         className="container"
         style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: 'var(--fg-color)', color: 'var(--bg-color)' }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '3rem' }}>
+        {/* Full-screen rest timer layout */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', width: '100%', justifyContent: 'space-around' }}>
+          {/* Responsive decrease button */}
           <button 
             className="label-bracket" 
-            style={{ fontSize: '4rem', color: 'var(--bg-color)', padding: '1rem' }} 
+            style={{ fontSize: '3rem', color: 'var(--bg-color)', padding: '1rem', minWidth: '60px' }} 
             onClick={() => adjustTimer(-10)}
           >
             -
           </button>
-          <h1 style={{ fontSize: '8rem' }}>{Math.floor(timer / 60)}:{(timer % 60).toString().padStart(2, '0')}</h1>
+          
+          <h1 style={{ fontSize: 'clamp(5rem, 20vw, 8rem)' }}>
+            {Math.floor(timer / 60)}:{(timer % 60).toString().padStart(2, '0')}
+          </h1>
+          
+          {/* Responsive increase button */}
           <button 
             className="label-bracket" 
-            style={{ fontSize: '4rem', color: 'var(--bg-color)', padding: '1rem' }} 
+            style={{ fontSize: '3rem', color: 'var(--bg-color)', padding: '1rem', minWidth: '60px' }} 
             onClick={() => adjustTimer(10)}
           >
             +
           </button>
         </div>
+
         <h2 style={{ letterSpacing: '0.5em', marginBottom: '2rem' }}>RESTING</h2>
         
         <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+          {/* Timer controls */}
           <button 
             className="label-bracket" 
             style={{ fontSize: '1.2rem', color: 'var(--bg-color)', border: '1px solid var(--bg-color)', padding: '0.5rem 1rem' }}

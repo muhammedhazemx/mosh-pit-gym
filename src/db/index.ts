@@ -1,10 +1,15 @@
 import Dexie, { type Table } from 'dexie';
 
+/**
+ * IndexedDB Schema for MOSH PIT GYM
+ * Powered by Dexie.js
+ */
+
 export interface Routine {
   id?: number;
   name: string;
   type: 'PPL' | 'UL' | 'FULL' | 'CUSTOM';
-  exercises: string[]; // List of exercise IDs or names for this routine
+  exercises: string[]; // List of movement names for this routine
 }
 
 export interface Exercise {
@@ -16,11 +21,11 @@ export interface Exercise {
 export interface Session {
   id?: number;
   date: Date;
-  startTime: Date;
-  endTime?: Date;
+  startTime: Date; // Start of the workout
+  endTime?: Date;   // End of the workout
   routineId?: number;
   routineName: string;
-  duration: number; // in seconds
+  duration: number; // Final duration in seconds
   status: 'active' | 'completed';
 }
 
@@ -30,7 +35,7 @@ export interface WorkoutSet {
   exerciseName: string;
   reps: number;
   weight: number;
-  timestamp: Date;
+  timestamp: Date; // Auto-generated for time tallying
   isPr?: boolean;
 }
 
@@ -42,6 +47,7 @@ export class GymDatabase extends Dexie {
 
   constructor() {
     super('GymDatabase');
+    // Schema definition -sessionId and exerciseName are key for fast querying
     this.version(1).stores({
       routines: '++id, name, type',
       exercises: '++id, name, category',
@@ -53,7 +59,9 @@ export class GymDatabase extends Dexie {
 
 export const db = new GymDatabase();
 
-// Seed initial data
+/**
+ * Seeds the database with default streetwear-approved splits if empty.
+ */
 export async function seedDatabase() {
   const routineCount = await db.routines.count();
   if (routineCount === 0) {
